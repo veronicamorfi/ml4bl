@@ -7,4 +7,4 @@ zf_embedding_learning:
 training (all approaches) and evaluation code.
 
 ## Dataset (wavs, melspecs, files):
-DOI 10.5281/zenodo.5545872
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5545872.svg)](https://doi.org/10.5281/zenodo.5545872)
