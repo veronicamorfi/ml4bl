@@ -2,7 +2,7 @@
 
 Embedding learning with triplets created from perceptual decisions of birds about song similarity.
 
-zf_embedding_learning:/
+zf_embedding_learning:
 training (all approaches) and evaluation code.
 
 ## Dataset (wavs, melspecs, files):
