@@ -1,7 +1,5 @@
-# ml4bl
+# ML4BL
 Machine Learning for Bird Song Learning 
 
-todo
-add training/eval code
-add preprosessing code
-add links to dataset
+## Dataset (wavs, melspecs, files):
+DOI 10.5281/zenodo.5545872
