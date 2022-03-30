@@ -7,8 +7,7 @@
 import keras
 import librosa
 import numpy as np
-import pickle
-import os
+import pickle, os, sys, getopt
 
 from ml4blmodels import *
 
@@ -56,7 +55,7 @@ def load_ml4bl_model():
 # functions to project data into the embedding
 
 def project_melspec(specarray, ml4blmodel):
-	print("PROJECT: specarray is shape: " + str(specarray.shape))
+	#print("PROJECT: specarray is shape: " + str(specarray.shape))
 	specarray = (specarray - ml4blmodel['train_mean'])/ml4blmodel['train_std']
 	specarray = np.expand_dims(specarray, axis=0)
 	specarray = np.expand_dims(specarray, axis=-1)
@@ -81,20 +80,28 @@ def project_melspec_fromwav(infpath, ml4blmodel):
 
 #####################################################
 if __name__=='__main__':
+	opts, args = getopt.getopt(sys.argv[1:],"")
+
 	ml4blmodel = load_ml4bl_model()
-	print("Loaded pretrained ml4bl model.")
-	ml4blmodel['single_model'].summary()
 
-	infpath = path_mel+'Yellow14_r27_1.pckl'
-	print(f"Input file path: {infpath}")
-	y_pred = project_melspec_frompickle(infpath, ml4blmodel)
-	print("Output projection (y_pred):")
-	print(y_pred)
+	if len(args)==0:
+		print("Loaded pretrained ml4bl model.")
+		ml4blmodel['single_model'].summary()
 
-	infpath = path_mel+'../wav/Yellow14_r27_1.wav'
-	print(f"Input file path: {infpath}")
-	y_pred = project_melspec_fromwav(infpath, ml4blmodel)
-	print("Output projection (y_pred):")
-	print(y_pred)
+		infpath = path_mel+'Yellow14_r27_1.pckl'
+		print(f"Input file path: {infpath}")
+		y_pred = project_melspec_frompickle(infpath, ml4blmodel)
+		print("Output projection (y_pred):")
+		print(y_pred)
 
+		infpath = path_mel+'../wav/Yellow14_r27_1.wav'
+		print(f"Input file path: {infpath}")
+		y_pred = project_melspec_fromwav(infpath, ml4blmodel)
+		print("Output projection (y_pred):")
+		print(y_pred)
+	else:
+		# Given a list of pickle filepaths as commandline arguments, output a CSV of embedding locations
+		for afpath in args:
+			y_pred = project_melspec_frompickle(afpath, ml4blmodel)
+			print("%s,%s" % (afpath,",".join(map(str, y_pred))))
 
