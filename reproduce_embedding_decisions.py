@@ -23,7 +23,7 @@ def project_triplet(triplet):
     return [apply_embedding.project_melspec_frompickle(path_mel + "/" + triplet[i].replace(".wav", ".pckl"), ml4blmodel) for i in [1,2,3]]
 
 def project_triplet_wav(triplet):
-    return [apply_embedding.project_melspec_fromwav(path_mel + "/" + triplet[i], ml4blmodel) for i in [1,2,3]]
+    return [apply_embedding.project_melspec_fromwav(path_mel + "/../wavs/" + triplet[i], ml4blmodel) for i in [1,2,3]]
 
     
 # projs = project_triplet(triplet)
@@ -41,7 +41,7 @@ for triplet in data[:nlimit]:
     if dist_n > dist_p:
         ncorrect += 1
     ntot += 1
-    if ntot % 200 == 0:
+    if ntot % 100 == 0:
     	print(f"      Done {ntot}")
 
 print(f"Correct: {ncorrect}/{ntot} (mel spec version)")
@@ -56,7 +56,7 @@ for triplet in data[:nlimit]:
     if dist_n > dist_p:
         ncorrect += 1
     ntot += 1
-    if ntot % 200 == 0:
+    if ntot % 100 == 0:
     	print(f"      Done {ntot}")
     
 print(f"Correct: {ncorrect}/{ntot} (wav version)")

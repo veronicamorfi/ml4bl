@@ -1,9 +1,8 @@
-
+# ML4BL (Machine Learning for Birdsong Learning)
 # Loading the pretrained model and applying it
 # This script by Dan Stowell. CC0.
 
 #####################################################
-
 import keras
 import librosa
 import numpy as np
@@ -19,7 +18,6 @@ path_mel = os.path.expanduser('~/datasets/ml4bl/ML4BL_ZF/melspecs/')
 path_modelpretrained = os.path.expanduser('~/Documents/ml4bl_bbsrc/model_parameters/ZF_emb_64D_LUSCINIA_MIXED_margin_loss.h5')
 
 emb_size = 64        # dimensions in embedding
-
 ntimeframes = 170    # timeframes in input
 n_mels = 150         # frequency bands in input
 
@@ -27,8 +25,6 @@ n_mels = 150         # frequency bands in input
 n_fft = 2048
 hop_length = 128
 win_length = 512
-
-
 
 #####################################################
 # loading the model etc
@@ -67,8 +63,12 @@ def project_melspec_frompickle(infpath, ml4blmodel):
 	return project_melspec(specarray, ml4blmodel)
 
 def project_melspec_fromwav(infpath, ml4blmodel):
-	a, sr = librosa.load("/home/dans/datasets/ml4bl/ML4BL_ZF/wavs/Yellow14_r27_1.wav", sr=48000)
-	specarray = librosa.feature.melspectrogram(y=a, sr=sr, n_mels=n_mels, n_fft=n_fft, hop_length=hop_length, win_length=win_length)
+	a, sr = librosa.load(infpath, sr=48000)
+	a = np.pad(a, (0, win_length)) # zero-pad to ensure end included in spec
+	specarray = librosa.feature.melspectrogram(y=a, sr=sr, n_mels=n_mels, n_fft=n_fft, hop_length=hop_length, win_length=win_length, pad_mode='reflect')
+	specarray = np.log(specarray + 1e-12)
+	#specarray = np.log(np.maximum(specarray, 1e-12))
+
 	if specarray.shape[1] > ntimeframes:
 		print(f"WARNING: truncating input to the first {ntimeframes} spectral frames")
 		specarray = specarray[:, :ntimeframes]
@@ -90,15 +90,18 @@ if __name__=='__main__':
 
 		infpath = path_mel+'Yellow14_r27_1.pckl'
 		print(f"Input file path: {infpath}")
-		y_pred = project_melspec_frompickle(infpath, ml4blmodel)
-		print("Output projection (y_pred):")
-		print(y_pred)
+		y_pred1 = project_melspec_frompickle(infpath, ml4blmodel)
+		print("Output projection (y_pred1):")
+		print(y_pred1)
 
-		infpath = path_mel+'../wav/Yellow14_r27_1.wav'
+		infpath = path_mel+'../wavs/Yellow14_r27_1.wav'
 		print(f"Input file path: {infpath}")
-		y_pred = project_melspec_fromwav(infpath, ml4blmodel)
-		print("Output projection (y_pred):")
-		print(y_pred)
+		y_pred2 = project_melspec_fromwav(infpath, ml4blmodel)
+		print("Output projection (y_pred2):")
+		print(y_pred2)
+		
+		print("Cosine sim:")
+		print(np.dot(y_pred1, y_pred2) / (np.sqrt(np.sum(y_pred1*y_pred1)) * np.sqrt(np.sum(y_pred2*y_pred2)) ))
 	else:
 		# Given a list of pickle filepaths as commandline arguments, output a CSV of embedding locations
 		for afpath in args:
