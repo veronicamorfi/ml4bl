@@ -66,8 +66,6 @@ def project_melspec_fromwav(infpath, ml4blmodel):
 	a, sr = librosa.load(infpath, sr=48000)
 	a = np.pad(a, (0, win_length)) # zero-pad to ensure end included in spec
 	specarray = librosa.feature.melspectrogram(y=a, sr=sr, n_mels=n_mels, n_fft=n_fft, hop_length=hop_length, win_length=win_length, pad_mode='reflect')
-	specarray = np.log(specarray + 1e-12)
-	#specarray = np.log(np.maximum(specarray, 1e-12))
 
 	if specarray.shape[1] > ntimeframes:
 		print(f"WARNING: truncating input to the first {ntimeframes} spectral frames")
@@ -76,6 +74,7 @@ def project_melspec_fromwav(infpath, ml4blmodel):
 		# zero-padding the time axis
 		specarray = np.concatenate((specarray, np.zeros((specarray.shape[0], ntimeframes-specarray.shape[1]))), axis=1)
 	specarray = specarray.T
+	specarray = np.log(np.maximum(specarray, 1e-12))
 	return project_melspec(specarray, ml4blmodel)
 
 #####################################################
@@ -95,6 +94,7 @@ if __name__=='__main__':
 		print(y_pred1)
 
 		infpath = path_mel+'../wavs/Yellow14_r27_1.wav'
+		#infpath = path_mel+'../wavs/Yellow14_r25_4.wav'
 		print(f"Input file path: {infpath}")
 		y_pred2 = project_melspec_fromwav(infpath, ml4blmodel)
 		print("Output projection (y_pred2):")

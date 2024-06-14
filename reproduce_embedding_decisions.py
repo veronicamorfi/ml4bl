@@ -7,7 +7,7 @@ import numpy as np
 
 path_mel = os.path.expanduser('~/datasets/ml4bl/ML4BL_ZF/melspecs/')
 
-nlimit = 200    # TODO this is the maximum number of triplets to check, just to limit runtime
+nlimit = 200_000    # TODO this is the maximum number of triplets to check, just to limit runtime
 
 ##########################################################################################################
 # Load model, and load a set of triplet definitions
@@ -38,6 +38,7 @@ for triplet in data[:nlimit]:
     projs = project_triplet(triplet)
     dist_p = np.sum((projs[0]-projs[2])**2)
     dist_n = np.sum((projs[1]-projs[2])**2)
+    #print((dist_n, dist_p))
     if dist_n > dist_p:
         ncorrect += 1
     ntot += 1
@@ -53,6 +54,7 @@ for triplet in data[:nlimit]:
     projs = project_triplet_wav(triplet)
     dist_p = np.sum((projs[0]-projs[2])**2)
     dist_n = np.sum((projs[1]-projs[2])**2)
+    #print((dist_n, dist_p))
     if dist_n > dist_p:
         ncorrect += 1
     ntot += 1
